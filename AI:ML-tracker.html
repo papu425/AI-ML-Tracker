@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#667eea">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI/ML Study Tracker - Programma Completo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #eac9c5 0%, #c66eb4 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 0;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #b594a9eb, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .content {
+            padding: 30px;
+        }
+        .month-section {
+            margin-bottom: 25px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .month-header {
+            background: #3498db;
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            font-size: 1.3em;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: background 0.3s;
+        }
+        .month-header:hover {
+            background: #4586b1;
+        }
+        .month-toggle {
+            font-size: 1.5em;
+            transition: transform 0.3s;
+        }
+        .month-toggle.active {
+            transform: rotate(45deg);
+        }
+        .month-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .month-content.show {
+            max-height: none;
+            padding: 20px;
+        }
+        .week-section {
+            background: #f8f9fa;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            overflow: hidden;
+        }
+        .week-header {
+            background: #34495e;
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .week-dates input[type="date"] {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 5px;
+            border-radius: 4px;
+            margin: 0 5px;
+        }
+        .day-section {
+            background: white;
+            margin: 15px 20px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .day-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        .task {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e1e8ed;
+            transition: all 0.3s;
+        }
+        .task:hover {
+            background: #e8f4fd;
+            border-color: #3498db;
+        }
+        .task.completed {
+            background: #d5f4e6;
+            border-color: #27ae60;
+            opacity: 0.8;
+        }
+        .task.completed .task-text {
+            text-decoration: line-through;
+            color: #7f8c8d;
+        }
+        .task input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        .task-text {
+            flex: 1;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+        .time-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .notes-section {
+            margin-top: 15px;
+        }
+        .notes-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        .notes-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        .review-section {
+            background: #e8f8f5;
+            border: 2px solid #27ae60;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .review-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .review-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .review-item label {
+            font-weight: bold;
+            color: #27ae60;
+        }
+        .review-item input[type="number"] {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid #27ae60;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .timer {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #9a7db1eb;
+            color: white;
+            padding: 25px;
+            border-radius: 50%;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            width: 150px;
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .timer-display {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+        }
+        .timer-controls {
+            display: flex;
+            gap: 5px;
+        }
+        .timer-controls button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .timer-controls button:hover {
+            background: #2980b9;
+        }
+        .achievements {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .achievement-badge {
+            display: inline-block;
+            background: #f39c12;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .achievement-badge.locked {
+            background: #95a5a6;
+            opacity: 0.6;
+        }
+        @media (max-width: 768px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            .timer {
+                position: relative;
+                width: 120px;
+                height: 120px;
+                margin: 20px auto;
+                bottom: auto;
+                right: auto;
+            }
+            .timer-display {
+                font-size: 1.5em;
+            }
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 AI/ML Study Progress Tracker</h1>
+            <p>Il tuo percorso completo verso il successo nell'Intelligenza Artificiale</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="hoursCount">0</div>
+                <div class="stat-label">Ore Studiate</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="hoursProgress" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="tasksCount">0</div>
+                <div class="stat-label">Task Completati</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="tasksProgress" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="daysCount">0</div>
+                <div class="stat-label">Giorni di Studio</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="daysProgress" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="progressCount">0%</div>
+                <div class="stat-label">Progresso Totale</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="totalProgress" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- MESE 1: PYTHON FOUNDATIONS -->
+            <div class="month-section">
+                <div class="month-header" onclick="toggleMonth('month1')">
+                    <span>📊 MESE 1: PYTHON FOUNDATIONS</span>
+                    <span class="month-toggle" id="month1-toggle">+</span>
+                </div>
+                <div class="month-content" id="month1">
+                    
+                    <!-- SETTIMANA 1 -->
+                    <div class="week-section">
+                        <div class="week-header">
+                            <span>📅 Settimana 1: Python Basics (Cap 1-6)</span>
+                            <div class="week-dates">
+                                <input type="date" id="week1-start">
+                                <span>-</span>
+                                <input type="date" id="week1-end">
+                            </div>
+                        </div>
+                        
+                        <!-- Lunedì -->
+                        <div class="day-section">
+                            <div class="day-header">LUNEDÌ - Setup e Introduzione</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">CS50 Lecture 0 (Introduction to Computer Science)</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Python Crash Course Cap 1-2 (Getting Started + Variables)</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Setup ambiente (VS Code, Python, Git)</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="notes-section">
+                                <textarea class="notes-input" placeholder="Note del giorno..." data-notes="monday-week1"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Martedì -->
+                        <div class="day-section">
+                            <div class="day-header">MARTEDÌ - Lists e Primi Progetti</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">CS50 Problem Set 0 (Scratch project)</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Python Crash Course Cap 3: Lists</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Primo progetto: Calcolatrice</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="notes-section">
+                                <textarea class="notes-input" placeholder="Difficoltà incontrate..." data-notes="tuesday-week1"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Mercoledì -->
+                        <div class="day-section">
+                            <div class="day-header">MERCOLEDÌ - Loops e Logica</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">CS50 Lecture 1 (C Language)</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Python Crash Course Cap 4: Working with Lists</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Progetto: Gioco Indovina Numero</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="notes-section">
+                                <textarea class="notes-input" placeholder="Cosa ho imparato oggi..." data-notes="wednesday-week1"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Giovedì -->
+                        <div class="day-section">
+                            <div class="day-header">GIOVEDÌ - Condizioni e Controllo</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">CS50 Problem Set 1 (parte 1)</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Python Crash Course Cap 5: If Statements</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Progetto: To-Do List Base</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="notes-section">
+                                <textarea class="notes-input" placeholder="Note del giorno..." data-notes="thursday-week1"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Venerdì -->
+                        <div class="day-section">
+                            <div class="day-header">VENERDÌ - Dictionaries e Review</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">CS50 Problem Set 1 (completamento)</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Python Crash Course Cap 6: Dictionaries</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Review Settimanale + GitHub Portfolio</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="notes-section">
+                                <textarea class="notes-input" placeholder="Planning settimana prossima..." data-notes="friday-week1"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Review Settimanale -->
+                        <div class="review-section">
+                            <div class="day-header">📈 REVIEW SETTIMANALE 1</div>
+                            <div class="review-grid">
+                                <div class="review-item">
+                                    <label>Ore totali:</label>
+                                    <input type="number" max="25" id="week1-hours"> / 25
+                                </div>
+                                <div class="review-item">
+                                    <label>CS50 Progress:</label>
+                                    <input type="number" max="100" id="week1-cs50"> %
+                                </div>
+                                <div class="review-item">
+                                    <label>Python Progress:</label>
+                                    <input type="number" max="100" id="week1-python"> %
+                                </div>
+                                <div class="review-item">
+                                    <label>Progetti:</label>
+                                    <input type="number" max="3" id="week1-projects"> / 3
+                                </div>
+                            </div>
+                            <div class="notes-section">
+                                <textarea class="notes-input" placeholder="Riflessioni settimana, difficoltà, successi..." data-notes="review-week1"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SETTIMANA 2 -->
+                    <div class="week-section">
+                        <div class="week-header">
+                            <span>📅 Settimana 2: Functions & Classes (Cap 7-11)</span>
+                            <div class="week-dates">
+                                <input type="date" id="week2-start">
+                                <span>-</span>
+                                <input type="date" id="week2-end">
+                            </div>
+                        </div>
+                        
+                        <!-- Lunedì -->
+                        <div class="day-section">
+                            <div class="day-header">LUNEDÌ - User Input e While Loops</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">CS50 Lecture 2 (Arrays)</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Python Crash Course Cap 7: User Input and While Loops</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Progetto Cap 7: Movie Tickets</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="notes-section">
+                                <textarea class="notes-input" placeholder="Note del giorno..." data-notes="monday-week2"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Martedì -->
+                        <div class="day-section">
+                            <div class="day-header">MARTEDÌ - Functions Basics</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">CS50 Problem Set 2 (parte 1)</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Python Crash Course Cap 8: Functions (prima parte)</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Progetto Cap 8: Album Function</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="notes-section">
+                                <textarea class="notes-input" placeholder="Note del giorno..." data-notes="tuesday-week2"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Mercoledì -->
+                        <div class="day-section">
+                            <div class="day-header">MERCOLEDÌ - Advanced Functions</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">CS50 Lecture 3 (Algorithms)</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Python Crash Course Cap 8: Functions Advanced (*args, **kwargs)</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Progetto Cap 8: Message Functions Module</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="notes-section">
+                                <textarea class="notes-input" placeholder="Note del giorno..." data-notes="wednesday-week2"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Giovedì -->
+                        <div class="day-section">
+                            <div class="day-header">GIOVEDÌ - OOP Introduction</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">CS50 Problem Set 2 (completamento)</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Python Crash Course Cap 9: Classes (Part 1)</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Progetto Cap 9: Car Class</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="notes-section">
+                                <textarea class="notes-input" placeholder="Note del giorno..." data-notes="thursday-week2"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Venerdì -->
+                        <div class="day-section">
+                            <div class="day-header">VENERDÌ - Inheritance e Files</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Python Crash Course Cap 9: Classes (Inheritance)</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Progetto Cap 9: Electric Car with Battery</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="1.5">
+                                <span class="task-text">Python Crash Course Cap 10: Files and Exceptions</span>
+                                <span class="time-badge">1.5h</span>
+                            </div>
+                            <div class="notes-section">
+                                <textarea class="notes-input" placeholder="Note del giorno..." data-notes="friday-week2"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Review Settimanale 2 -->
+                        <div class="review-section">
+                            <div class="day-header">📈 REVIEW SETTIMANALE 2</div>
+                            <div class="review-grid">
+                                <div class="review-item">
+                                    <label>Ore totali:</label>
+                                    <input type="number" max="25" id="week2-hours"> / 25
+                                </div>
+                                <div class="review-item">
+                                    <label>Capitoli completati:</label>
+                                    <input type="number" max="5" id="week2-chapters"> / 5
+                                </div>
+                                <div class="review-item">
+                                    <label>Progetti GitHub:</label>
+                                    <input type="number" max="6" id="week2-github"> / 6
+                                </div>
+                            </div>
+                            <div class="notes-section">
+                                <textarea class="notes-input" placeholder="Concetto più difficile questa settimana..." data-notes="review-week2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SETTIMANA 3-4: PROJECTS -->
+                    <div class="week-section">
+                        <div class="week-header">
+                            <span>📅 Settimana 3-4: Major Projects (Cap 12-20)</span>
+                            <div class="week-dates">
+                                <input type="date" id="week3-start">
+                                <span>-</span>
+                                <input type="date" id="week4-end">
+                            </div>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-header">PROGETTO 1: Alien Invasion Game (Cap 12-14)</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="3">
+                                <span class="task-text">Cap 12: Ship setup e movement</span>
+                                <span class="time-badge">3h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="3">
+                                <span class="task-text">Cap 13: Bullets e alien fleet</span>
+                                <span class="time-badge">3h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="3">
+                                <span class="task-text">Cap 14: Scoring e game refinement</span>
+                                <span class="time-badge">3h</span>
+                                                        </div>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-header">PROGETTO 2: Data Visualization (Cap 15-17)</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="3">
+                                <span class="task-text">Cap 15: Matplotlib basics</span>
+                                <span class="time-badge">3h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="3">
+                                <span class="task-text">Cap 16: CSV data e weather analysis</span>
+                                <span class="time-badge">3h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="3">
+                                <span class="task-text">Cap 17: API data (GitHub repos)</span>
+                                <span class="time-badge">3h</span>
+                            </div>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-header">PROGETTO 3: Django Web App (Cap 18-20)</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="4">
+                                <span class="task-text">Cap 18-19: Django setup e Learning Log</span>
+                                <span class="time-badge">4h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="4">
+                                <span class="task-text">Cap 20: Styling e deployment</span>
+                                <span class="time-badge">4h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MESE 2: DATA STRUCTURES & ALGORITHMS -->
+            <div class="month-section">
+                <div class="month-header" onclick="toggleMonth('month2')">
+                    <span>🧠 MESE 2: DATA STRUCTURES & ALGORITHMS</span>
+                    <span class="month-toggle" id="month2-toggle">+</span>
+                </div>
+                <div class="month-content" id="month2">
+                    
+                    <!-- Settimana 5 -->
+                    <div class="week-section">
+                        <div class="week-header">
+                            <span>📅 Settimana 5: Algoritmi Base</span>
+                            <div class="week-dates">
+                                <input type="date" id="week5-start">
+                                <span>-</span>
+                                <input type="date" id="week5-end">
+                            </div>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-header">Data Structures Fundamentals</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="3">
+                                <span class="task-text">CS50 Lectures 4-5 (Memory, Data Structures)</span>
+                                <span class="time-badge">3h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="3">
+                                <span class="task-text">Implementazione lista linked, stack, queue</span>
+                                <span class="time-badge">3h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="4">
+                                <span class="task-text">LeetCode easy problems (20 problemi)</span>
+                                <span class="time-badge">4h</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Settimana 6 -->
+                    <div class="week-section">
+                        <div class="week-header">
+                            <span>📅 Settimana 6: Database & SQL</span>
+                            <div class="week-dates">
+                                <input type="date" id="week6-start">
+                                <span>-</span>
+                                <input type="date" id="week6-end">
+                            </div>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-header">SQL e Database Design</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="3">
+                                <span class="task-text">CS50 SQL lectures</span>
+                                <span class="time-badge">3h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="3">
+                                <span class="task-text">SQLite pratico con Python</span>
+                                <span class="time-badge">3h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="4">
+                                <span class="task-text">Primo progetto web con Flask</span>
+                                <span class="time-badge">4h</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Settimana 7 -->
+                    <div class="week-section">
+                        <div class="week-header">
+                            <span>📅 Settimana 7: Advanced Python</span>
+                            <div class="week-dates">
+                                <input type="date" id="week7-start">
+                                <span>-</span>
+                                <input type="date" id="week7-end">
+                            </div>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-header">Concurrency e Testing</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="3">
+                                <span class="task-text">Multithreading/multiprocessing</span>
+                                <span class="time-badge">3h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="3">
+                                <span class="task-text">Testing con pytest</span>
+                                <span class="time-badge">3h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="4">
+                                <span class="task-text">Progetto automation avanzato</span>
+                                <span class="time-badge">4h</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Settimana 8 -->
+                    <div class="week-section">
+                        <div class="week-header">
+                            <span>📅 Settimana 8: Portfolio Building</span>
+                            <div class="week-dates">
+                                <input type="date" id="week8-start">
+                                <span>-</span>
+                                <input type="date" id="week8-end">
+                            </div>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-header">Progetti Professionali</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="5">
+                                <span class="task-text">5 progetti completati e documentati</span>
+                                <span class="time-badge">5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="3">
+                                <span class="task-text">Prime applicazioni su Upwork/Freelancer</span>
+                                <span class="time-badge">3h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="2">
+                                <span class="task-text">LinkedIn ottimizzato</span>
+                                <span class="time-badge">2h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MESE 3-4: MATHEMATICS & DATA SCIENCE -->
+            <div class="month-section">
+                <div class="month-header" onclick="toggleMonth('month34')">
+                    <span>📊 MESE 3-4: MATHEMATICS & DATA SCIENCE</span>
+                    <span class="month-toggle" id="month34-toggle">+</span>
+                </div>
+                <div class="month-content" id="month34">
+                    
+                    <!-- Settimana 9 -->
+                    <div class="week-section">
+                        <div class="week-header">
+                            <span>📅 Settimana 9: Linear Algebra</span>
+                            <div class="week-dates">
+                                <input type="date" id="week9-start">
+                                <span>-</span>
+                                <input type="date" id="week9-end">
+                            </div>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-header">3Blue1Brown Series</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="2">
+                                <span class="task-text">3B1B Ep.1-2 + NumPy vectors</span>
+                                <span class="time-badge">2h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="2">
+                                <span class="task-text">3B1B Ep.3-4 + Matrix operations</span>
+                                <span class="time-badge">2h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="2">
+                                <span class="task-text">3B1B Ep.5-6 + Applications</span>
+                                <span class="time-badge">2h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="4">
+                                <span class="task-text">NumPy project completo</span>
+                                <span class="time-badge">4h</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Settimane 10-12 -->
+                    <div class="week-section">
+                        <div class="week-header">
+                            <span>📅 Settimane 10-12: Stats, Visualization & Analysis</span>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-header">Statistics & Probability</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="5">
+                                <span class="task-text">Khan Academy Statistics Course</span>
+                                <span class="time-badge">5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="5">
+                                <span class="task-text">Pandas statistical functions mastery</span>
+                                <span class="time-badge">5h</span>
+                            </div>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-header">Data Visualization Mastery</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="5">
+                                <span class="task-text">Matplotlib + Seaborn advanced</span>
+                                <span class="time-badge">5h</span>
+                            </div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="5">
+                                <span class="task-text">Interactive plots con Plotly</span>
+                                <span class="time-badge">5h</span>
+                            </div>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-header">First Data Analysis Project</div>
+                            <div class="task">
+                                <input type="checkbox" onchange="updateStats()" data-hours="10">
+                                <span class="task-text">Kaggle EDA project completo</span>
+                                <span class="time-badge">10h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACHIEVEMENTS -->
+            <div class="month-section">
+                <div class="month-header" onclick="toggleMonth('achievements')">
+                    <span>🏆 I Tuoi Achievements</span>
+                    <span class="month-toggle" id="achievements-toggle">+</span>
+                </div>
+                <div class="month-content achievements" id="achievements">
+                    <div id="achievements-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pomodoro Timer -->
+    <div class="timer">
+        <div class="timer-display" id="timer">25:00</div>
+        <div class="timer-controls">
+            <button onclick="startTimer()">▶️</button>
+            <button onclick="pauseTimer()">⏸️</button>
+            <button onclick="resetTimer()">🔄</button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT COMPLETO -->
+    <script>
+        // Variabili globali
+        let timerInterval = null;
+        let timerMinutes = 25;
+        let timerSeconds = 0;
+        let isTimerRunning = false;
+
+        // Toggle mesi
+        function toggleMonth(monthId) {
+            const content = document.getElementById(monthId);
+            const toggle = document.getElementById(monthId + '-toggle');
+            
+            if (content.classList.contains('show')) {
+                content.classList.remove('show');
+                toggle.textContent = '+';
+                toggle.classList.remove('active');
+            } else {
+                content.classList.add('show');
+                toggle.textContent = '×';
+                toggle.classList.add('active');
+            }
+        }
+
+        // Update statistiche
+        function updateStats() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+               // Update statistiche
+        function updateStats() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            let checkedCount = 0;
+            let totalHours = 0;
+            
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    checkedCount++;
+                    const hours = parseFloat(checkbox.getAttribute('data-hours') || 1.5);
+                    totalHours += hours;
+                    checkbox.parentElement.classList.add('completed');
+                } else {
+                    checkbox.parentElement.classList.remove('completed');
+                }
+            });
+            
+            // Aggiorna contatori
+            document.getElementById('tasksCount').textContent = checkedCount;
+            document.getElementById('hoursCount').textContent = totalHours.toFixed(1);
+            
+            // Calcola giorni unici
+            const uniqueDays = Math.ceil(checkedCount / 3);
+            document.getElementById('daysCount').textContent = uniqueDays;
+            
+            // Calcola progresso totale
+            const totalTasks = checkboxes.length;
+            const progress = totalTasks > 0 ? Math.round((checkedCount / totalTasks) * 100) : 0;
+            document.getElementById('progressCount').textContent = progress + '%';
+            
+            // Aggiorna barre di progresso
+            document.getElementById('hoursProgress').style.width = Math.min((totalHours / 400) * 100, 100) + '%';
+            document.getElementById('tasksProgress').style.width = Math.min((checkedCount / totalTasks) * 100, 100) + '%';
+            document.getElementById('daysProgress').style.width = Math.min((uniqueDays / 100) * 100, 100) + '%';
+            document.getElementById('totalProgress').style.width = progress + '%';
+            
+            // Salva progresso
+            saveProgress();
+            
+            // Controlla achievements
+            checkAchievements(checkedCount, totalHours);
+        }
+
+        // Timer functions
+        function updateTimerDisplay() {
+            const display = document.getElementById('timer');
+            const minutes = String(timerMinutes).padStart(2, '0');
+            const seconds = String(timerSeconds).padStart(2, '0');
+            display.textContent = `${minutes}:${seconds}`;
+        }
+
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                timerInterval = setInterval(() => {
+                    if (timerSeconds === 0) {
+                        if (timerMinutes === 0) {
+                            pauseTimer();
+                            alert('🎉 Sessione completata! Prenditi 5 minuti di pausa!');
+                            resetTimer();
+                            return;
+                        }
+                        timerMinutes--;
+                        timerSeconds = 59;
+                    } else {
+                        timerSeconds--;
+                    }
+                    updateTimerDisplay();
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            isTimerRunning = false;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timerMinutes = 25;
+            timerSeconds = 0;
+            updateTimerDisplay();
+        }
+
+        // Achievements system
+        function checkAchievements(tasks, hours) {
+            const achievements = [
+                { id: 'first-task', name: '🎯 Prima Task', condition: tasks >= 1, locked: tasks < 1 },
+                { id: 'day-complete', name: '📅 Giornata Completa', condition: tasks >= 3, locked: tasks < 3 },
+                { id: 'week-complete', name: '🗓️ Settimana Completa', condition: tasks >= 15, locked: tasks < 15 },
+                { id: 'ten-hours', name: '⏰ 10 Ore di Studio', condition: hours >= 10, locked: hours < 10 },
+                { id: 'fifty-hours', name: '⏱️ 50 Ore di Studio', condition: hours >= 50, locked: hours < 50 },
+                { id: 'hundred-tasks', name: '💯 100 Task', condition: tasks >= 100, locked: tasks < 100 },
+                { id: 'month-complete', name: '🌟 Mese Completo', condition: tasks >= 60, locked: tasks < 60 },
+                { id: 'python-master', name: '🐍 Python Master', condition: tasks >= 30, locked: tasks < 30 }
+            ];
+            
+            const container = document.getElementById('achievements-container');
+            container.innerHTML = '';
+            
+            achievements.forEach(achievement => {
+                const badge = document.createElement('span');
+                badge.className = achievement.locked ? 'achievement-badge locked' : 'achievement-badge';
+                badge.textContent = achievement.name;
+                container.appendChild(badge);
+            });
+        }
+
+        // Salvataggio locale
+        function saveProgress() {
+            const data = {
+                checkboxes: {},
+                notes: {},
+                reviews: {}
+            };
+            
+            // Salva checkbox
+            document.querySelectorAll('input[type="checkbox"]').forEach((checkbox, index) => {
+                data.checkboxes[index] = checkbox.checked;
+            });
+            
+            // Salva note
+            document.querySelectorAll('.notes-input').forEach(textarea => {
+                const noteId = textarea.getAttribute('data-notes');
+                if (noteId) {
+                    data.notes[noteId] = textarea.value;
+                }
+            });
+            
+            // Salva review inputs
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                if (input.id) {
+                    data.reviews[input.id] = input.value;
+                }
+            });
+            
+            localStorage.setItem('aiml-tracker-progress', JSON.stringify(data));
+        }
+
+        // Carica progresso salvato
+        function loadProgress() {
+            const savedData = localStorage.getItem('aiml-tracker-progress');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                
+                // Ripristina checkbox
+                document.querySelectorAll('input[type="checkbox"]').forEach((checkbox, index) => {
+                    if (data.checkboxes[index] !== undefined) {
+                        checkbox.checked = data.checkboxes[index];
+                    }
+                });
+                
+                // Ripristina note
+                document.querySelectorAll('.notes-input').forEach(textarea => {
+                    const noteId = textarea.getAttribute('data-notes');
+                    if (noteId && data.notes[noteId]) {
+                        textarea.value = data.notes[noteId];
+                    }
+                });
+                
+                // Ripristina review inputs
+                document.querySelectorAll('input[type="number"]').forEach(input => {
+                    if (input.id && data.reviews[input.id]) {
+                        input.value = data.reviews[input.id];
+                    }
+                });
+                
+                updateStats();
+            }
+        }
+
+        // Auto-save delle note
+        document.addEventListener('DOMContentLoaded', function() {
+            // Carica progresso salvato
+            loadProgress();
+            
+            // Auto-save quando si scrive nelle note
+            document.querySelectorAll('.notes-input').forEach(textarea => {
+                textarea.addEventListener('input', saveProgress);
+            });
+            
+            // Auto-save per review inputs
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', saveProgress);
+            });
+            
+            // Inizializza achievements
+            checkAchievements(0, 0);
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + S per salvare
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                saveProgress();
+                alert('✅ Progresso salvato!');
+            }
+            
+            // Spacebar per start/pause timer (quando non in un input)
+            if (e.code === 'Space' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'INPUT') {
+                e.preventDefault();
+                if (isTimerRunning) {
+                    pauseTimer();
+                } else {
+                    startTimer();
+                }
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+           updateStats();
+           updateTimerDisplay();
+        });}
+        // SISTEMA TUTTO AUTOMATICAMENTE
+(function() {
+    // Aspetta che la pagina sia caricata
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupEverything);
+    } else {
+        setupEverything();
+    }
+    
+    function setupEverything() {
+        console.log('🚀 Inizializzazione tracker...');
+        
+        // 1. Collega TUTTI i checkbox
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        console.log(`✅ Trovati ${checkboxes.length} checkbox`);
+        
+        checkboxes.forEach((checkbox, index) => {
+            // Rimuovi vecchi listener se esistono
+            checkbox.removeEventListener('change', updateStats);
+            checkbox.removeEventListener('click', updateStats);
+            
+            // Aggiungi nuovo listener
+            checkbox.addEventListener('change', function() {
+                console.log(`Checkbox ${index + 1} cambiato`);
+                updateStats();
+            });
+            
+            // Aggiungi data-hours se manca
+            if (!checkbox.hasAttribute('data-hours')) {
+                const timeElement = checkbox.parentElement.querySelector('.task-time, .time-badge');
+                if (timeElement) {
+                    const hours = parseFloat(timeElement.textContent) || 1.5;
+                    checkbox.setAttribute('data-hours', hours);
+                }
+            }
+        });
+        
+        // 2. Sistema il timer display
+        const timerDisplay = document.querySelector('#timerDisplay, #timer-display, #timer, .timer-display');
+        if (timerDisplay && !timerDisplay.id) {
+            timerDisplay.id = 'timerDisplay';
+        }
+        
+        // 3. Inizializza tutto
+        updateStats();
+        if (typeof updateTimerDisplay === 'function') {
+            updateTimerDisplay();
+        }
+        
+        // 4. Carica dati salvati
+        if (typeof loadProgress === 'function') {
+            loadProgress();
+        }
+        
+        console.log('✨ Tracker inizializzato con successo!');
+    }
+})();
+
+// RIDEFINISCI updateStats per essere sicuri che funzioni
+window.updateStats = function() {
+    console.log('📊 Aggiornamento statistiche...');
+    
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    let checkedCount = 0;
+    let totalHours = 0;
+    
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            checkedCount++;
+            // Prendi ore da data-hours o dal testo
+            let hours = parseFloat(checkbox.getAttribute('data-hours'));
+            if (isNaN(hours)) {
+                const timeEl = checkbox.parentElement.querySelector('.task-time, .time-badge');
+                hours = timeEl ? parseFloat(timeEl.textContent) : 1.5;
+            }
+            totalHours += hours;
+            
+            // Aggiungi classi per stile
+            checkbox.parentElement.classList.add('completed', 'done');
+        } else {
+            checkbox.parentElement.classList.remove('completed', 'done');
+        }
+    });
+    
+    // Aggiorna TUTTI i contatori
+    document.getElementById('hoursCount').textContent = totalHours.toFixed(1);
+    document.getElementById('tasksCount').textContent = checkedCount;
+    document.getElementById('daysCount').textContent = Math.ceil(checkedCount / 3);
+    document.getElementById('progressCount').textContent = 
+        checkboxes.length > 0 ? Math.round((checkedCount / checkboxes.length) * 100) + '%' : '0%';
+    
+    // Aggiorna le barre di progresso
+    const percentage = checkboxes.length > 0 ? (checkedCount / checkboxes.length) * 100 : 0;
+    document.getElementById('hoursProgress').style.width = Math.min(percentage * 1.2, 100) + '%';
+    document.getElementById('tasksProgress').style.width = percentage + '%';
+    document.getElementById('daysProgress').style.width = Math.min(percentage * 0.8, 100) + '%';
+    document.getElementById('totalProgress').style.width = percentage + '%';
+    
+    console.log(`✅ Aggiornato: ${checkedCount} task, ${totalHours.toFixed(1)} ore`);
+    
+    // Salva se la funzione esiste
+    if (typeof saveProgress === 'function') {
+        saveProgress();
+    }
+};
+ // FIX TIMER COMPLETO
+  (function() {
+    // Trova il display del timer con tutti i possibili selettori
+    function findTimerDisplay() {
+        return document.querySelector('#timerDisplay') || 
+               document.querySelector('#timer') ||
+               document.querySelector('#timer-display') ||
+               document.querySelector('.timer-display') ||
+               document.querySelector('.timer-section .timer-display') ||
+               document.querySelector('.timer div:first-child');
+    }
+    
+    // Variabili timer globali
+    window.timerMinutes = 25;
+    window.timerSeconds = 0;
+    window.timerInterval = null;
+    window.isTimerRunning = false;
+    
+    // Aggiorna display del timer
+    window.updateTimerDisplay = function() {
+        const display = findTimerDisplay();
+        if (display) {
+            const mins = String(timerMinutes).padStart(2, '0');
+            const secs = String(timerSeconds).padStart(2, '0');
+            display.textContent = `${mins}:${secs}`;
+        }
+    };
+    
+    // Start timer
+    window.startTimer = function() {
+        console.log('▶️ Timer avviato');
+        if (!isTimerRunning) {
+            isTimerRunning = true;
+            timerInterval = setInterval(() => {
+                if (timerSeconds === 0) {
+                    if (timerMinutes === 0) {
+                        pauseTimer();
+                        // Notifica
+                        if ('Notification' in window && Notification.permission === 'granted') {
+                            new Notification('Pomodoro Completato!', {
+                                body: 'Prenditi 5 minuti di pausa! ☕',
+                                icon: '🍅'
+                            });
+                        } else {
+                            alert('🎉 Pomodoro completato! Prenditi 5 minuti di pausa!');
+                        }
+                        resetTimer();
+                        return;
+                    }
+                    timerMinutes--;
+                    timerSeconds = 59;
+                } else {
+                    timerSeconds--;
+                }
+                updateTimerDisplay();
+            }, 1000);
+        }
+    };
+    
+    // Pause timer
+    window.pauseTimer = function() {
+        console.log('⏸️ Timer in pausa');
+        isTimerRunning = false;
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    };
+    
+    // Reset timer
+    window.resetTimer = function() {
+        console.log('🔄 Timer resettato');
+        pauseTimer();
+        timerMinutes = 25;
+        timerSeconds = 0;
+        updateTimerDisplay();
+    };
+    
+    // Inizializza il display
+    updateTimerDisplay();
+    
+    // Richiedi permesso notifiche
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
+})();
+  // SISTEMA DI SALVATAGGIO AUTOMATICO
+    (function() {
+    const STORAGE_KEY = 'aiml_tracker_progress';
+    
+    // Salva tutto
+    window.saveProgress = function() {
+        console.log('💾 Salvataggio in corso...');
+        
+        const data = {
+            version: '1.0',
+            lastSaved: new Date().toISOString(),
+            checkboxes: {},
+            textareas: {},
+            dates: {},
+            stats: {
+                hours: document.getElementById('hoursCount')?.textContent || '0',
+                tasks: document.getElementById('tasksCount')?.textContent || '0',
+                days: document.getElementById('daysCount')?.textContent || '0',
+                progress: document.getElementById('progressCount')?.textContent || '0%'
+            }
+        };
+        
+        // Salva stato di ogni checkbox
+        document.querySelectorAll('input[type="checkbox"]').forEach((cb, index) => {
+            data.checkboxes[`cb_${index}`] = {
+                checked: cb.checked,
+                taskText: cb.parentElement.querySelector('.task-text')?.textContent || ''
+            };
+        });
+        
+        // Salva contenuto textarea
+        document.querySelectorAll('textarea').forEach((ta, index) => {
+            if (ta.value.trim()) {
+                data.textareas[`ta_${index}`] = ta.value;
+            }
+        });
+        
+        // Salva date
+        document.querySelectorAll('input[type="date"]').forEach((input, index) => {
+            if (input.value) {
+                data.dates[`date_${index}`] = input.value;
+            }
+        });
+        
+        // Salva in localStorage
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            showNotification('✅ Progresso salvato!', 'success');
+            console.log('✅ Salvato con successo');
+        } catch (e) {
+            console.error('❌ Errore salvataggio:', e);
+            showNotification('❌ Errore nel salvataggio', 'error');
+        }
+    };
+    
+    // Carica tutto
+    window.loadProgress = function() {
+        console.log('📂 Caricamento dati salvati...');
+        
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) {
+                console.log('ℹ️ Nessun dato salvato trovato');
+                return;
+            }
+            
+            const data = JSON.parse(saved);
+            console.log(`📅 Ultimo salvataggio: ${new Date(data.lastSaved).toLocaleString()}`);
+            
+            // Ripristina checkbox
+            Object.entries(data.checkboxes || {}).forEach(([key, value], index) => {
+                const checkbox = document.querySelectorAll('input[type="checkbox"]')[index];
+                if (checkbox) {
+                    checkbox.checked = value.checked;
+                }
+            });
+            
+            // Ripristina textarea
+            Object.entries(data.textareas || {}).forEach(([key, value]) => {
+                const index = parseInt(key.split('_')[1]);
+                const textarea = document.querySelectorAll('textarea')[index];
+                if (textarea) {
+                    textarea.value = value;
+                }
+            });
+            
+            // Ripristina date
+            Object.entries(data.dates || {}).forEach(([key, value]) => {
+                const index = parseInt(key.split('_')[1]);
+                const dateInput = document.querySelectorAll('input[type="date"]')[index];
+                if (dateInput) {
+                    dateInput.value = value;
+                }
+            });
+            
+            // Aggiorna statistiche
+            updateStats();
+            
+            showNotification('✅ Dati caricati con successo!', 'success');
+            
+        } catch (e) {
+            console.error('❌ Errore caricamento:', e);
+        }
+    };
+    
+    // Notifica visuale
+    function showNotification(message, type = 'success') {
+        // Rimuovi notifica esistente
+        const existing = document.querySelector('.save-notification');
+        if (existing) existing.remove();
+        
+        // Crea nuova notifica
+        const notification = document.createElement('div');
+        notification.className = 'save-notification';
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+            background: ${type === 'success' ? '#28a745' : '#dc3545'};
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Rimuovi dopo 3 secondi
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+    
+    // Auto-save ogni 30 secondi
+    setInterval(saveProgress, 30000);
+    
+    // Salva quando si chiude/ricarica la pagina
+    window.addEventListener('beforeunload', saveProgress);
+    
+    // Aggiungi CSS per animazioni
+    if (!document.querySelector('#notification-styles')) {
+        const style = document.createElement('style');
+        style.id = 'notification-styles';
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Carica dati all'avvio
+    setTimeout(loadProgress, 100);
+})();
+
+// COMANDI UTILI DA CONSOLE
+console.log(`
+🎯 COMANDI DISPONIBILI:
+- saveProgress() - Salva manualmente
+- loadProgress() - Carica dati salvati
+- localStorage.clear() - Cancella tutti i dati salvati
+- updateStats() - Aggiorna statistiche
+- startTimer() - Avvia timer
+`);
+        </script>
+        </body>
+        </html>
