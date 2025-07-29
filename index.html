@@ -328,6 +328,100 @@
                 border-radius: 0;
             }
         }
+        
+        B) CSS aggiuntivo per mobile:
+css
+/* Miglioramenti Mobile */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 1.8em;
+    }
+    
+    .stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        padding: 15px;
+    }
+    
+    .stat-card {
+        padding: 15px;
+    }
+    
+    .stat-number {
+        font-size: 1.8em;
+    }
+    
+    .task {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    .task-time {
+        font-size: 0.7em;
+        padding: 2px 6px;
+    }
+    
+    .timer {
+        bottom: 10px;
+        right: 10px;
+        padding: 15px;
+        width: 100px;
+        height: 100px;
+    }
+    
+    .timer-display {
+        font-size: 1.5em;
+    }
+    
+    button {
+        padding: 6px 10px;
+        font-size: 0.8em;
+    }
+    
+    /* Previeni zoom su input */
+    input[type="checkbox"],
+    input[type="date"],
+    textarea {
+        font-size: 16px;
+    }
+    
+    /* Migliora touch targets */
+    .task {
+        min-height: 50px;
+    }
+    
+    input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+/* Supporto Dark Mode */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #1a1a1a;
+    }
+    
+    .container {
+        background: #2d2d2d;
+        color: #e0e0e0;
+    }
+    
+    .stat-card,
+    .week,
+    .day-section {
+        background: #3d3d3d;
+        color: #e0e0e0;
+    }
+}
+
+/* Installabile come PWA */
+@media (display-mode: standalone) {
+    .header {
+        padding-top: 40px; /* Spazio per status bar iOS */
+    }
+}
+    
     </style>
 </head>
 <body>
